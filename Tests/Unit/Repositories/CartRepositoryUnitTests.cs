@@ -76,7 +76,9 @@ namespace Tests.Unit.Repositories
             using (var context = new AppDbContext(options))
             {
                 var repository = new CartRepository(context);
-                cart.AddItem(new CartItem(1, "Product A", 1, 10m));
+
+                var productId = Guid.NewGuid();
+                cart.AddItem(new CartItem(productId, "Product A", 1, 10m));
 
                 // Act
                 await repository.UpdateCartAsync(cart);
@@ -130,7 +132,8 @@ namespace Tests.Unit.Repositories
             using (var context = new AppDbContext(options))
             {
                 var repository = new CartRepository(context);
-                var cartItem = new CartItem(1, "Product B", 2, 20m);
+                var productId = Guid.NewGuid();
+                var cartItem = new CartItem(productId, "Product B", 2, 20m);
 
                 // Act
                 await repository.AddItemToCartAsync(cart.Id, cartItem);
@@ -148,7 +151,8 @@ namespace Tests.Unit.Repositories
             // Arrange
             var options = GetDbContextOptions();
             var cart = new Cart();
-            var cartItem = new CartItem(1, "Product C", 1, 30m);
+            var productId = Guid.NewGuid();
+            var cartItem = new CartItem(productId, "Product C", 1, 30m);
 
             using (var context = new AppDbContext(options))
             {
@@ -160,7 +164,7 @@ namespace Tests.Unit.Repositories
             using (var context = new AppDbContext(options))
             {
                 var repository = new CartRepository(context);
-                var updatedItem = new CartItem(1, "Product C", 3, 35m) { Id = cartItem.Id };
+                var updatedItem = new CartItem(productId, "Product C", 3, 35m) { Id = cartItem.Id };
 
                 // Act
                 await repository.UpdateItemInCartAsync(cart.Id, updatedItem);
@@ -179,7 +183,8 @@ namespace Tests.Unit.Repositories
             // Arrange
             var options = GetDbContextOptions();
             var cart = new Cart();
-            var cartItem = new CartItem(1, "Product D", 1, 40m);
+            var cartItemId = Guid.NewGuid();
+            var cartItem = new CartItem(cartItemId, "Product D", 1, 40m);
 
             using (var context = new AppDbContext(options))
             {
@@ -207,8 +212,10 @@ namespace Tests.Unit.Repositories
             // Arrange
             var options = GetDbContextOptions();
             var cart = new Cart();
-            var cartItem1 = new CartItem(1, "Product E", 1, 50m);
-            var cartItem2 = new CartItem(2, "Product F", 2, 60m);
+            var cartItemId1 = Guid.NewGuid();
+            var cartItem1 = new CartItem(cartItemId1, "Product E", 1, 50m);
+            var cartItemId2 = Guid.NewGuid();
+            var cartItem2 = new CartItem(cartItemId2, "Product F", 2, 60m);
 
             using (var context = new AppDbContext(options))
             {

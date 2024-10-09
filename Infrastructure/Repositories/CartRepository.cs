@@ -14,7 +14,7 @@ namespace Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<Cart> GetCartAsync(int id)
+        public async Task<Cart> GetCartAsync(Guid id)
         {
             return await _context.Carts
                 .Include(c => c.Items)
@@ -33,7 +33,7 @@ namespace Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteCartAsync(int id)
+        public async Task DeleteCartAsync(Guid id)
         {
             var cart = await _context.Carts.FindAsync(id);
             if (cart != null)
@@ -43,13 +43,13 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<IEnumerable<CartItem>> GetItemsFromCartAsync(int cartId)
+        public async Task<IEnumerable<CartItem>> GetItemsFromCartAsync(Guid cartId)
         {
             var cart = await GetCartAsync(cartId);
             return cart?.Items ?? new List<CartItem>();
         }
 
-        public async Task AddItemToCartAsync(int cartId, CartItem item)
+        public async Task AddItemToCartAsync(Guid cartId, CartItem item)
         {
             var cart = await GetCartAsync(cartId);
             if (cart != null)
@@ -59,7 +59,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task UpdateItemInCartAsync(int cartId, CartItem item)
+        public async Task UpdateItemInCartAsync(Guid cartId, CartItem item)
         {
             var cart = await GetCartAsync(cartId);
             if (cart != null)
@@ -73,7 +73,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task RemoveItemFromCartAsync(int cartId, int itemId)
+        public async Task RemoveItemFromCartAsync(Guid cartId, Guid itemId)
         {
             var cart = await GetCartAsync(cartId);
             if (cart != null)

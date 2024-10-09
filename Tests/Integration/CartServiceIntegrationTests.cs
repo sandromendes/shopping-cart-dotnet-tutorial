@@ -2,6 +2,7 @@
 using Business.Services;
 using Domain.Business.Interfaces;
 using Domain.Mapping;
+using Domain.Transfer;
 using Domain.Models;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
@@ -41,6 +42,49 @@ namespace Tests.Integration
         }
 
         [Fact]
+        public async Task GetItemsFromCartAsync_ShouldReturnItemsIfCartExists()
+        {
+            // Arrange
+            var cartDto = new CartDTO();
+            var cart = await _cartService.AddCartAsync(cartDto);
+            var itemDto = new CartItemDTO { ProductId = Guid.NewGuid(), ProductName = "Product A", Quantity = 2, Price = 10.0m };
+            await _cartService.AddItemToCartAsync(cart.Id, itemDto);
+
+            // Act
+            var items = await _cartService.GetItemsFromCartAsync(cart.Id);
+
+            // Assert
+            Assert.NotNull(items);
+            Assert.Single(items);
+            Assert.Equal("Product A", items.First().ProductName);
+        }
+
+        [Fact]
+        public async Task GetItemsFromCartAsync_ShouldReturnNullIfCartDoesNotExist()
+        {
+            // Act
+            var result = await _cartService.GetItemsFromCartAsync(Guid.NewGuid());
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task GetItemsFromCartAsync_ShouldReturnEmptyIfCartExistsButHasNoItems()
+        {
+            // Arrange
+            var cartDto = new CartDTO();
+            var cart = await _cartService.AddCartAsync(cartDto);
+
+            // Act
+            var items = await _cartService.GetItemsFromCartAsync(cart.Id);
+
+            // Assert
+            Assert.NotNull(items);
+            Assert.Empty(items);
+        }
+
+        [Fact]
         public async Task AddCartAsync_ShouldPersistCart()
         {
             // Arrange
@@ -60,7 +104,7 @@ namespace Tests.Integration
             // Arrange
             var cartDto = new CartDTO();
             var cart = await _cartService.AddCartAsync(cartDto);
-            var itemDto = new CartItemDTO { ProductId = 1, ProductName = "Product A", Quantity = 2, Price = 10.0m };
+            var itemDto = new CartItemDTO { ProductId = Guid.NewGuid(), ProductName = "Product A", Quantity = 2, Price = 10.0m };
 
             // Act
             var addedItem = await _cartService.AddItemToCartAsync(cart.Id, itemDto);
@@ -76,7 +120,7 @@ namespace Tests.Integration
             // Arrange
             var cartDto = new CartDTO();
             var cart = await _cartService.AddCartAsync(cartDto);
-            var itemDto = new CartItemDTO {ProductId = 1, ProductName = "Product A", Quantity = 2, Price = 10.0m };
+            var itemDto = new CartItemDTO {ProductId = Guid.NewGuid(), ProductName = "Product A", Quantity = 2, Price = 10.0m };
             await _cartService.AddItemToCartAsync(cart.Id, itemDto);
 
             // Act
@@ -94,7 +138,7 @@ namespace Tests.Integration
             // Arrange
             var cartDto = new CartDTO();
             var cart = await _cartService.AddCartAsync(cartDto);
-            var itemDto = new CartItemDTO {ProductId = 1, ProductName = "Product A", Quantity = 2, Price = 10.0m };
+            var itemDto = new CartItemDTO {ProductId = Guid.NewGuid(), ProductName = "Product A", Quantity = 2, Price = 10.0m };
             var addedItem = await _cartService.AddItemToCartAsync(cart.Id, itemDto);
 
             // Update the item
@@ -131,7 +175,7 @@ namespace Tests.Integration
             // Arrange
             var cartDto = new CartDTO();
             var cart = await _cartService.AddCartAsync(cartDto);
-            var itemDto = new CartItemDTO { ProductId = 1, ProductName = "Product A", Quantity = 2, Price = 10.0m };
+            var itemDto = new CartItemDTO { ProductId = Guid.NewGuid(), ProductName = "Product A", Quantity = 2, Price = 10.0m };
             var addedItem = await _cartService.AddItemToCartAsync(cart.Id, itemDto);
 
             // Act
@@ -146,7 +190,7 @@ namespace Tests.Integration
         public async Task GetCartAsync_ShouldReturnNullIfCartDoesNotExist()
         {
             // Act
-            var result = await _cartService.GetCartAsync(999);
+            var result = await _cartService.GetCartAsync(Guid.NewGuid());
 
             // Assert
             Assert.Null(result);
@@ -165,11 +209,11 @@ namespace Tests.Integration
             // Arrange
             var cartDto = new CartDTO();
             var cart = await _cartService.AddCartAsync(cartDto);
-            var itemDto = new CartItemDTO {ProductId = 1, ProductName = "Product A", Quantity = 2, Price = 10.0m };
+            var itemDto = new CartItemDTO {ProductId = Guid.NewGuid(), ProductName = "Product A", Quantity = 2, Price = 10.0m };
             await _cartService.AddItemToCartAsync(cart.Id, itemDto);
 
             // Act
-            var result = await _cartService.UpdateItemInCartAsync(cart.Id, 999, itemDto);
+            var result = await _cartService.UpdateItemInCartAsync(cart.Id, Guid.NewGuid(), itemDto);
 
             // Assert
             Assert.Null(result);
@@ -181,11 +225,11 @@ namespace Tests.Integration
             // Arrange
             var cartDto = new CartDTO();
             var cart = await _cartService.AddCartAsync(cartDto);
-            var itemDto = new CartItemDTO {ProductId = 1, ProductName = "Product A", Quantity = 2, Price = 10.0m };
+            var itemDto = new CartItemDTO {ProductId = Guid.NewGuid(), ProductName = "Product A", Quantity = 2, Price = 10.0m };
             await _cartService.AddItemToCartAsync(cart.Id, itemDto);
 
             // Act
-            var result = await _cartService.RemoveItemFromCartAsync(cart.Id, 999);
+            var result = await _cartService.RemoveItemFromCartAsync(cart.Id, Guid.NewGuid());
 
             // Assert
             Assert.False(result);
@@ -195,16 +239,16 @@ namespace Tests.Integration
         public void CartItem_ShouldThrowExceptionIfInvalidDataOnCreation()
         {
             // Act & Assert
-            Assert.Throws<ArgumentException>(() => new CartItem(0, string.Empty, 1, 10.0m)); // Invalid product name
-            Assert.Throws<ArgumentException>(() => new CartItem(1, "Product A", 0, 10.0m)); // Invalid quantity
-            Assert.Throws<ArgumentException>(() => new CartItem(1, "Product A", 1, -5.0m)); // Invalid price
+            Assert.Throws<ArgumentException>(() => new CartItem(Guid.NewGuid(), string.Empty, 1, 10.0m)); // Invalid product name
+            Assert.Throws<ArgumentException>(() => new CartItem(Guid.NewGuid(), "Product A", 0, 10.0m)); // Invalid quantity
+            Assert.Throws<ArgumentException>(() => new CartItem(Guid.NewGuid(), "Product A", 1, -5.0m)); // Invalid price
         }
 
         [Fact]
         public void CartItem_UpdateQuantity_ShouldThrowExceptionIfInvalidQuantity()
         {
             // Arrange
-            var item = new CartItem(1, "Product A", 1, 10.0m);
+            var item = new CartItem(Guid.NewGuid(), "Product A", 1, 10.0m);
 
             // Act & Assert
             Assert.Throws<ArgumentException>(() => item.UpdateQuantity(0)); // Invalid quantity
@@ -214,7 +258,7 @@ namespace Tests.Integration
         public void CartItem_UpdatePrice_ShouldThrowExceptionIfInvalidPrice()
         {
             // Arrange
-            var item = new CartItem(1, "Product A", 1, 10.0m);
+            var item = new CartItem(Guid.NewGuid(), "Product A", 1, 10.0m);
 
             // Act & Assert
             Assert.Throws<ArgumentException>(() => item.UpdatePrice(-5.0m)); // Invalid price
@@ -224,7 +268,7 @@ namespace Tests.Integration
         public void CartItem_UpdateFrom_ShouldThrowExceptionIfUpdatedItemIsNull()
         {
             // Arrange
-            var item = new CartItem(1, "Product A", 1, 10.0m);
+            var item = new CartItem(Guid.NewGuid(), "Product A", 1, 10.0m);
 
             // Act & Assert
             Assert.Throws<ArgumentNullException>(() => item.UpdateFrom(null)); // Null item

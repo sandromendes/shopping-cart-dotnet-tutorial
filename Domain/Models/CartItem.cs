@@ -2,19 +2,19 @@
 {
     public class CartItem
     {
-        public int Id { get; set; }
-        public int ProductId { get; private set; }
+        public Guid Id { get; set; }
+        public Guid ProductId { get; private set; }
         public string ProductName { get; private set; }
         public int Quantity { get; private set; }
         public decimal Price { get; private set; }
         public decimal Subtotal => Quantity * Price;
 
-        public int CartId { get; set; }
+        public Guid CartId { get; set; }
         public Cart Cart { get; set; }
 
-        public CartItem(int productId, string productName, int quantity, decimal price)
+        public CartItem(Guid productId, string productName, int quantity, decimal price)
         {
-            if (productId == 0) throw new ArgumentException(nameof(productId));
+            if (!Guid.TryParse(productId.ToString(), out _)) throw new ArgumentException(null, nameof(productId));
 
             if (string.IsNullOrWhiteSpace(productName))
                 throw new ArgumentException("Product name cannot be empty.");

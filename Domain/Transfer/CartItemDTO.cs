@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Domain.Mapping
+namespace Domain.Transfer
 {
     public class CartItemDTO
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
-        public int ProductId { get; set; }
+        public Guid ProductId { get; set; }
 
         [Required]
         public string ProductName { get; set; }
@@ -18,13 +18,13 @@ namespace Domain.Mapping
         [Range(0, double.MaxValue)]
         public decimal Price { get; set; }
 
-        public int CartId { get; set; }
+        public Guid CartId { get; set; }
 
         public CartItemDTO()
         {
         }
 
-        public CartItemDTO(int productId, string productName, int quantity, decimal price)
+        public CartItemDTO(Guid productId, string productName, int quantity, decimal price)
         {
             ProductId = productId;
             ProductName = productName;

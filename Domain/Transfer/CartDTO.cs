@@ -1,8 +1,8 @@
-﻿namespace Domain.Mapping
+﻿namespace Domain.Transfer
 {
     public class CartDTO
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public ICollection<CartItemDTO> Items { get; set; }
     }

@@ -1,6 +1,6 @@
 ﻿using API.Controllers;
 using Domain.Business.Interfaces;
-using Domain.Mapping;
+using Domain.Transfer;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -22,10 +22,10 @@ namespace Tests.Unit.Controllers
         {
             // Arrange
             var cartDto = new CartDTO();
-            _cartServiceMock.Setup(service => service.GetCartAsync(It.IsAny<int>())).ReturnsAsync(cartDto);
+            _cartServiceMock.Setup(service => service.GetCartAsync(It.IsAny<Guid>())).ReturnsAsync(cartDto);
 
             // Act
-            var result = await _cartController.GetCartAsync(1);
+            var result = await _cartController.GetCartAsync(Guid.NewGuid().ToString());
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -36,10 +36,10 @@ namespace Tests.Unit.Controllers
         public async Task GetCart_ShouldReturnNotFoundIfCartDoesNotExist()
         {
             // Arrange
-            _cartServiceMock.Setup(service => service.GetCartAsync(It.IsAny<int>())).ReturnsAsync((CartDTO)null);
+            _cartServiceMock.Setup(service => service.GetCartAsync(It.IsAny<Guid>())).ReturnsAsync((CartDTO)null);
 
             // Act
-            var result = await _cartController.GetCartAsync(999);
+            var result = await _cartController.GetCartAsync(Guid.NewGuid().ToString());
 
             // Assert
             Assert.IsType<NotFoundResult>(result);
@@ -49,7 +49,7 @@ namespace Tests.Unit.Controllers
         public async Task AddCart_ShouldReturnCreatedAtAction()
         {
             // Arrange
-            var cartDto = new CartDTO { Id = 1 }; // Assumindo que o ID é gerado no serviço
+            var cartDto = new CartDTO { Id = Guid.NewGuid() };
             _cartServiceMock.Setup(service => service.AddCartAsync(cartDto)).ReturnsAsync(cartDto);
 
             // Act
@@ -58,7 +58,7 @@ namespace Tests.Unit.Controllers
             // Assert
             var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result);
             Assert.Equal("GetCartAsync", createdAtActionResult.ActionName);
-            Assert.Equal(1, createdAtActionResult.RouteValues["id"]);
+            Assert.Equal(cartDto.Id, createdAtActionResult.RouteValues["cartId"]);
         }
 
         [Fact]
@@ -78,11 +78,11 @@ namespace Tests.Unit.Controllers
         public async Task UpdateCart_ShouldReturnNoContent()
         {
             // Arrange
-            var cartDto = new CartDTO { Id = 1 };
+            var cartDto = new CartDTO { Id = Guid.NewGuid() };
             _cartServiceMock.Setup(service => service.UpdateCartAsync(cartDto)).ReturnsAsync(cartDto);
 
             // Act
-            var result = await _cartController.UpdateCartAsync(cartDto.Id, cartDto);
+            var result = await _cartController.UpdateCartAsync(cartDto.Id.ToString(), cartDto);
 
             // Assert
             Assert.IsType<OkObjectResult>(result);
@@ -95,7 +95,7 @@ namespace Tests.Unit.Controllers
             _cartController.ModelState.AddModelError("Error", "Invalid model");
 
             // Act
-            var result = await _cartController.UpdateCartAsync(1, new CartDTO());
+            var result = await _cartController.UpdateCartAsync(Guid.NewGuid().ToString(), new CartDTO());
 
             // Assert
             Assert.IsType<BadRequestResult>(result);
@@ -105,11 +105,11 @@ namespace Tests.Unit.Controllers
         public async Task UpdateCart_ShouldReturnNotFoundIfCartDoesNotExist()
         {
             // Arrange
-            var cartDto = new CartDTO { Id = 999 };
+            var cartDto = new CartDTO { Id = Guid.NewGuid() };
             _cartServiceMock.Setup(service => service.UpdateCartAsync(cartDto)).ReturnsAsync((CartDTO)null);
 
             // Act
-            var result = await _cartController.UpdateCartAsync(cartDto.Id, cartDto);
+            var result = await _cartController.UpdateCartAsync(cartDto.Id.ToString(), cartDto);
 
             // Assert
             Assert.IsType<NotFoundResult>(result);
@@ -119,10 +119,10 @@ namespace Tests.Unit.Controllers
         public async Task DeleteCart_ShouldReturnNoContent()
         {
             // Arrange
-            _cartServiceMock.Setup(service => service.DeleteCartAsync(It.IsAny<int>())).ReturnsAsync(true);
+            _cartServiceMock.Setup(service => service.DeleteCartAsync(It.IsAny<Guid>())).ReturnsAsync(true);
 
             // Act
-            var result = await _cartController.DeleteCartAsync(1);
+            var result = await _cartController.DeleteCartAsync(Guid.NewGuid().ToString());
 
             // Assert
             Assert.IsType<NoContentResult>(result);
@@ -132,10 +132,10 @@ namespace Tests.Unit.Controllers
         public async Task DeleteCart_ShouldReturnNotFoundIfCartDoesNotExist()
         {
             // Arrange
-            _cartServiceMock.Setup(service => service.DeleteCartAsync(It.IsAny<int>())).ReturnsAsync(false);
+            _cartServiceMock.Setup(service => service.DeleteCartAsync(It.IsAny<Guid>())).ReturnsAsync(false);
 
             // Act
-            var result = await _cartController.DeleteCartAsync(999);
+            var result = await _cartController.DeleteCartAsync(Guid.NewGuid().ToString());
 
             // Assert
             Assert.IsType<NotFoundResult>(result);
@@ -148,7 +148,7 @@ namespace Tests.Unit.Controllers
             _cartController.ModelState.AddModelError("Error", "Invalid Id");
 
             // Act
-            var result = await _cartController.DeleteCartAsync(-1);
+            var result = await _cartController.DeleteCartAsync("Invalid Id");
 
             // Assert
             Assert.IsType<BadRequestResult>(result);

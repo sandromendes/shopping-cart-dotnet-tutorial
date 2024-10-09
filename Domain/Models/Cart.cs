@@ -2,10 +2,10 @@
 {
     public class Cart
     {
-        public int Id { get; set; }
-        private readonly List<CartItem> _items = new List<CartItem>();
+        public Guid Id { get; set; }
+        private List<CartItem> _items = new List<CartItem>();
 
-        public IList<CartItem> Items => _items.AsReadOnly();
+        public IList<CartItem> Items => _items;
         public decimal Total => _items.Sum(item => item.Subtotal);
 
         public void AddItem(CartItem item)
@@ -22,7 +22,7 @@
             }
         }
 
-        public void RemoveItem(int  productId)
+        public void RemoveItem(Guid productId)
         {
             var item = _items.FirstOrDefault(i => i.ProductId == productId);
             if (item != null)
@@ -31,7 +31,7 @@
             }
         }
 
-        public void UpdateItem(int productId, int quantity, decimal price)
+        public void UpdateItem(Guid productId, int quantity, decimal price)
         {
             var item = _items.FirstOrDefault(i => i.ProductId == productId);
             if (item != null)

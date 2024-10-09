@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Models;
+using Domain.Transfer;
 
 namespace Domain.Mapping
 {
@@ -13,7 +14,7 @@ namespace Domain.Mapping
             CreateMap<CartItem, CartItemDTO>();
                         
             CreateMap<CartDTO, Cart>()
-                .ForMember(dest => dest.Items, opt => opt.Ignore());
+                .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
                         
             CreateMap<CartItemDTO, CartItem>()
                 .ConstructUsing(src => new CartItem(src.ProductId, src.ProductName, src.Quantity, src.Price));

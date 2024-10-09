@@ -9,7 +9,7 @@ namespace Tests.Unit.Domain
         {
             // Arrange
             var cart = new Cart();
-            var item = new CartItem(1, "Product A", 2, 10.0m);
+            var item = new CartItem(Guid.NewGuid(), "Product A", 2, 10.0m);
 
             // Act
             cart.AddItem(item);
@@ -24,11 +24,12 @@ namespace Tests.Unit.Domain
         {
             // Arrange
             var cart = new Cart();
-            var item = new CartItem(1, "Product A", 2, 10.0m);
+            var cartItemId = Guid.NewGuid();
+            var item = new CartItem(cartItemId, "Product A", 2, 10.0m);
             cart.AddItem(item);
 
             // Act
-            cart.AddItem(new CartItem(1, "Product A", 3, 10.0m));
+            cart.AddItem(new CartItem(cartItemId, "Product A", 3, 10.0m));
 
             // Assert
             Assert.Single(cart.Items);
@@ -40,11 +41,12 @@ namespace Tests.Unit.Domain
         {
             // Arrange
             var cart = new Cart();
-            var item = new CartItem(1, "Product A", 2, 10.0m);
+            var cartItemId = Guid.NewGuid();
+            var item = new CartItem(cartItemId, "Product A", 2, 10.0m);
             cart.AddItem(item);
 
             // Act
-            cart.RemoveItem(1);
+            cart.RemoveItem(cartItemId);
 
             // Assert
             Assert.Empty(cart.Items);
@@ -57,7 +59,7 @@ namespace Tests.Unit.Domain
             var cart = new Cart();
 
             // Act
-            cart.RemoveItem(0);
+            cart.RemoveItem(Guid.NewGuid());
 
             // Assert
             Assert.Empty(cart.Items);
@@ -68,11 +70,13 @@ namespace Tests.Unit.Domain
         {
             // Arrange
             var cart = new Cart();
-            var item = new CartItem(1, "Product A", 2, 10.0m);
+            var cartItemId = Guid.NewGuid();
+
+            var item = new CartItem(cartItemId, "Product A", 2, 10.0m);
             cart.AddItem(item);
 
             // Act
-            cart.UpdateItem(1, 5, 15.0m);
+            cart.UpdateItem(cartItemId, 5, 15.0m);
 
             // Assert
             Assert.Equal(5, cart.Items.First().Quantity);
@@ -86,7 +90,7 @@ namespace Tests.Unit.Domain
             var cart = new Cart();
 
             // Act
-            cart.UpdateItem(1, 5, 15.0m);
+            cart.UpdateItem(Guid.NewGuid(), 5, 15.0m);
 
             // Assert
             Assert.Empty(cart.Items);

@@ -4,6 +4,7 @@ using Business.Services;
 using Infrastructure.Repositories;
 using Domain.Business.Interfaces;
 using Domain.Infrastructure.Interfaces;
+using Domain.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,13 @@ builder.Services.AddScoped<ICartService, CartService>();
 // Register repository
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+builder.Services.AddMvc(options =>
+{
+    options.SuppressAsyncSuffixInActionNames = false;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -54,3 +62,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
