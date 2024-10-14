@@ -2,7 +2,7 @@
 {
     public class CartDTO
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         public ICollection<CartItemDTO> Items { get; set; }
     }

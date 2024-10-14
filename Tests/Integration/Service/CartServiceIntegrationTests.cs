@@ -8,7 +8,7 @@ using Infrastructure.Data;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace Tests.Integration
+namespace Tests.Integration.Service
 {
     public class CartServiceIntegrationTests : IDisposable
     {
@@ -120,7 +120,7 @@ namespace Tests.Integration
             // Arrange
             var cartDto = new CartDTO();
             var cart = await _cartService.AddCartAsync(cartDto);
-            var itemDto = new CartItemDTO {ProductId = Guid.NewGuid(), ProductName = "Product A", Quantity = 2, Price = 10.0m };
+            var itemDto = new CartItemDTO { ProductId = Guid.NewGuid(), ProductName = "Product A", Quantity = 2, Price = 10.0m };
             await _cartService.AddItemToCartAsync(cart.Id, itemDto);
 
             // Act
@@ -138,7 +138,7 @@ namespace Tests.Integration
             // Arrange
             var cartDto = new CartDTO();
             var cart = await _cartService.AddCartAsync(cartDto);
-            var itemDto = new CartItemDTO {ProductId = Guid.NewGuid(), ProductName = "Product A", Quantity = 2, Price = 10.0m };
+            var itemDto = new CartItemDTO { ProductId = Guid.NewGuid(), ProductName = "Product A", Quantity = 2, Price = 10.0m };
             var addedItem = await _cartService.AddItemToCartAsync(cart.Id, itemDto);
 
             // Update the item
@@ -209,7 +209,7 @@ namespace Tests.Integration
             // Arrange
             var cartDto = new CartDTO();
             var cart = await _cartService.AddCartAsync(cartDto);
-            var itemDto = new CartItemDTO {ProductId = Guid.NewGuid(), ProductName = "Product A", Quantity = 2, Price = 10.0m };
+            var itemDto = new CartItemDTO { ProductId = Guid.NewGuid(), ProductName = "Product A", Quantity = 2, Price = 10.0m };
             await _cartService.AddItemToCartAsync(cart.Id, itemDto);
 
             // Act
@@ -225,7 +225,7 @@ namespace Tests.Integration
             // Arrange
             var cartDto = new CartDTO();
             var cart = await _cartService.AddCartAsync(cartDto);
-            var itemDto = new CartItemDTO {ProductId = Guid.NewGuid(), ProductName = "Product A", Quantity = 2, Price = 10.0m };
+            var itemDto = new CartItemDTO { ProductId = Guid.NewGuid(), ProductName = "Product A", Quantity = 2, Price = 10.0m };
             await _cartService.AddItemToCartAsync(cart.Id, itemDto);
 
             // Act

@@ -75,47 +75,6 @@ namespace Tests.Unit.Controllers
         }
 
         [Fact]
-        public async Task UpdateCart_ShouldReturnNoContent()
-        {
-            // Arrange
-            var cartDto = new CartDTO { Id = Guid.NewGuid() };
-            _cartServiceMock.Setup(service => service.UpdateCartAsync(cartDto)).ReturnsAsync(cartDto);
-
-            // Act
-            var result = await _cartController.UpdateCartAsync(cartDto.Id.ToString(), cartDto);
-
-            // Assert
-            Assert.IsType<OkObjectResult>(result);
-        }
-
-        [Fact]
-        public async Task UpdateCart_ShouldReturnBadRequestIfModelInvalid()
-        {
-            // Arrange
-            _cartController.ModelState.AddModelError("Error", "Invalid model");
-
-            // Act
-            var result = await _cartController.UpdateCartAsync(Guid.NewGuid().ToString(), new CartDTO());
-
-            // Assert
-            Assert.IsType<BadRequestResult>(result);
-        }
-
-        [Fact]
-        public async Task UpdateCart_ShouldReturnNotFoundIfCartDoesNotExist()
-        {
-            // Arrange
-            var cartDto = new CartDTO { Id = Guid.NewGuid() };
-            _cartServiceMock.Setup(service => service.UpdateCartAsync(cartDto)).ReturnsAsync((CartDTO)null);
-
-            // Act
-            var result = await _cartController.UpdateCartAsync(cartDto.Id.ToString(), cartDto);
-
-            // Assert
-            Assert.IsType<NotFoundResult>(result);
-        }
-
-        [Fact]
         public async Task DeleteCart_ShouldReturnNoContent()
         {
             // Arrange

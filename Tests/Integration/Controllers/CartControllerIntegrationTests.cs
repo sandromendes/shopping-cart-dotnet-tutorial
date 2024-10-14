@@ -104,63 +104,6 @@ namespace Tests.Integration.Controllers
         }
 
         [Fact]
-        public async Task UpdateCart_ShouldReturnOk()
-        {
-            // Arrange
-            var cartId = Guid.NewGuid();
-
-            var cart = new CartDTO
-            {
-                Id = cartId,
-                Items = new[]
-                {
-                    new CartItemDTO {
-                        Id = Guid.NewGuid(),
-                        ProductName = "Updated Product",
-                        Quantity = 3,
-                        Price = 19
-                    } 
-                }
-            };
-            await _client.PostAsJsonAsync("/api/cart", cart);
-
-            // Act
-            var response = await _client.PutAsJsonAsync($"/api/cart/{cartId}", cart);
-
-            // Assert
-            response.EnsureSuccessStatusCode();
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task UpdateCart_ShouldReturnBadRequestIfModelInvalid()
-        {
-            // Arrange
-            var cart = new CartDTO(); // Invalid cart
-
-            // Act
-            var response = await _client.PutAsJsonAsync("/api/cart/1", cart);
-
-            // Assert
-            Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task UpdateCart_ShouldReturnNotFoundIfCartDoesNotExist()
-        {
-            // Arrange
-            var id = Guid.NewGuid();
-
-            var cart = new CartDTO { Id = id, Items = new[] { new CartItemDTO { ProductName = "Non-existent Product", Quantity = 1 } } };
-
-            // Act
-            var response = await _client.PutAsJsonAsync($"/api/cart/{Guid.NewGuid()}", cart);
-
-            // Assert
-            Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
-        }
-
-        [Fact]
         public async Task DeleteCart_ShouldReturnNoContent()
         {
             // Arrange

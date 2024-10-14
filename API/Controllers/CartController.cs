@@ -40,22 +40,6 @@ namespace API.Controllers
             return CreatedAtAction(nameof(GetCartAsync), new { cartId = createdCart.Id }, createdCart);
         }
 
-        [HttpPut("{cartId}")]
-        public async Task<IActionResult> UpdateCartAsync(string cartId, [FromBody] CartDTO cartDto)
-        {
-            if (!Guid.TryParse(cartId, out _))
-                return BadRequest();
-
-            if (Guid.Parse(cartId) != cartDto.Id)
-                return BadRequest();
-
-            var updatedCart = await _cartService.UpdateCartAsync(cartDto);
-            if (updatedCart == null)
-                return NotFound();
-
-            return Ok(updatedCart);
-        }
-
         [HttpDelete("{cartId}")]
         public async Task<IActionResult> DeleteCartAsync(string cartId)
         {
