@@ -1,6 +1,8 @@
 ﻿using API.Controllers;
-using Domain.Business.Interfaces;
+using Business.Commands;
+using Business.Queries;
 using Domain.Transfer;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -8,13 +10,13 @@ namespace Tests.Unit.Controllers
 {
     public class CartControllerUnitTests
     {
-        private readonly Mock<ICartService> _cartServiceMock;
+        private readonly Mock<IMediator> _mediatorMock;
         private readonly CartController _cartController;
 
         public CartControllerUnitTests()
         {
-            _cartServiceMock = new Mock<ICartService>();
-            _cartController = new CartController(_cartServiceMock.Object);
+            _mediatorMock = new Mock<IMediator>();
+            _cartController = new CartController(_mediatorMock.Object);
         }
 
         [Fact]
@@ -22,7 +24,9 @@ namespace Tests.Unit.Controllers
         {
             // Arrange
             var cartDto = new CartDTO();
-            _cartServiceMock.Setup(service => service.GetCartAsync(It.IsAny<Guid>())).ReturnsAsync(cartDto);
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<GetCartQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(cartDto);
 
             // Act
             var result = await _cartController.GetCartAsync(Guid.NewGuid().ToString());
@@ -36,7 +40,9 @@ namespace Tests.Unit.Controllers
         public async Task GetCart_ShouldReturnNotFoundIfCartDoesNotExist()
         {
             // Arrange
-            _cartServiceMock.Setup(service => service.GetCartAsync(It.IsAny<Guid>())).ReturnsAsync((CartDTO)null);
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<GetCartQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((CartDTO)null);
 
             // Act
             var result = await _cartController.GetCartAsync(Guid.NewGuid().ToString());
@@ -50,7 +56,9 @@ namespace Tests.Unit.Controllers
         {
             // Arrange
             var cartDto = new CartDTO { Id = Guid.NewGuid() };
-            _cartServiceMock.Setup(service => service.AddCartAsync(cartDto)).ReturnsAsync(cartDto);
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<AddCartCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(cartDto);
 
             // Act
             var result = await _cartController.AddCartAsync(cartDto);
@@ -78,7 +86,9 @@ namespace Tests.Unit.Controllers
         public async Task DeleteCart_ShouldReturnNoContent()
         {
             // Arrange
-            _cartServiceMock.Setup(service => service.DeleteCartAsync(It.IsAny<Guid>())).ReturnsAsync(true);
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<DeleteCartCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
 
             // Act
             var result = await _cartController.DeleteCartAsync(Guid.NewGuid().ToString());
@@ -91,7 +101,9 @@ namespace Tests.Unit.Controllers
         public async Task DeleteCart_ShouldReturnNotFoundIfCartDoesNotExist()
         {
             // Arrange
-            _cartServiceMock.Setup(service => service.DeleteCartAsync(It.IsAny<Guid>())).ReturnsAsync(false);
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<DeleteCartCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(false);
 
             // Act
             var result = await _cartController.DeleteCartAsync(Guid.NewGuid().ToString());
@@ -113,5 +125,4 @@ namespace Tests.Unit.Controllers
             Assert.IsType<BadRequestResult>(result);
         }
     }
-
 }
