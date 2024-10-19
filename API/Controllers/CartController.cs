@@ -1,5 +1,7 @@
-﻿using Domain.Business.Interfaces;
+﻿using Business.Commands;
+using Business.Queries;
 using Domain.Transfer;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -8,20 +10,20 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class CartController : ControllerBase
     {
-        private readonly ICartService _cartService;
+        private readonly IMediator _mediator;
 
-        public CartController(ICartService cartService)
+        public CartController(IMediator mediator)
         {
-            _cartService = cartService;
+            _mediator = mediator;
         }
 
         [HttpGet("{cartId}")]
         public async Task<IActionResult> GetCartAsync(string cartId)
         {
-            if (!Guid.TryParse(cartId, out _))
+            if (!Guid.TryParse(cartId, out var parsedCartId))
                 return BadRequest();
 
-            var cart = await _cartService.GetCartAsync(Guid.Parse(cartId));
+            var cart = await _mediator.Send(new GetCartQuery(parsedCartId));
 
             if (cart == null)
                 return NotFound();
@@ -35,7 +37,7 @@ namespace API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var createdCart = await _cartService.AddCartAsync(cartDto);
+            var createdCart = await _mediator.Send(new AddCartCommand(cartDto));
 
             return CreatedAtAction(nameof(GetCartAsync), new { cartId = createdCart.Id }, createdCart);
         }
@@ -43,10 +45,10 @@ namespace API.Controllers
         [HttpDelete("{cartId}")]
         public async Task<IActionResult> DeleteCartAsync(string cartId)
         {
-            if(!Guid.TryParse(cartId, out _))
+            if (!Guid.TryParse(cartId, out var parsedCartId))
                 return BadRequest();
 
-            var deleted = await _cartService.DeleteCartAsync(Guid.Parse(cartId));
+            var deleted = await _mediator.Send(new DeleteCartCommand(parsedCartId));
 
             if (!deleted)
                 return NotFound();
@@ -57,10 +59,11 @@ namespace API.Controllers
         [HttpGet("{cartId}/items")]
         public async Task<IActionResult> GetItemsFromCartAsync(string cartId)
         {
-            if (!Guid.TryParse(cartId, out _))
+            if (!Guid.TryParse(cartId, out var parsedCartId))
                 return BadRequest();
 
-            var items = await _cartService.GetItemsFromCartAsync(Guid.Parse(cartId));
+            var items = await _mediator.Send(new GetItemsFromCartQuery(parsedCartId));
+
             if (items == null)
                 return NotFound();
 
@@ -74,25 +77,23 @@ namespace API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!Guid.TryParse(cartId, out _))
+            if (!Guid.TryParse(cartId, out var parsedCartId))
                 return BadRequest();
 
-            var item = await _cartService.AddItemToCartAsync(Guid.Parse(cartId), itemDto);
+            var item = await _mediator.Send(new AddItemToCartCommand(parsedCartId, itemDto));
+
             return CreatedAtAction(nameof(GetItemsFromCartAsync), new { cartId }, item);
         }
 
         [HttpDelete("{cartId}/items/{itemId}")]
         public async Task<IActionResult> RemoveItemFromCartAsync(string cartId, string itemId)
         {
-            if (!Guid.TryParse(cartId, out _))
+            if (!Guid.TryParse(cartId, out var parsedCartId) 
+                || !Guid.TryParse(itemId, out var parsedItemId))
                 return BadRequest();
 
-            if (!Guid.TryParse(itemId, out _))
-                return BadRequest();
+            var removed = await _mediator.Send(new RemoveItemFromCartCommand(parsedCartId, parsedItemId));
 
-            var removed = await _cartService
-                .RemoveItemFromCartAsync(Guid.Parse(cartId), Guid.Parse(itemId));
-            
             if (!removed)
                 return NotFound();
 
@@ -103,19 +104,13 @@ namespace API.Controllers
         public async Task<IActionResult> UpdateItemInCartAsync(string cartId, string itemId, 
             [FromBody] CartItemDTO itemDto)
         {
-            if (!Guid.TryParse(cartId, out _))
+            if (!Guid.TryParse(cartId, out var parsedCartId) || !Guid.TryParse(itemId, out var parsedItemId))
                 return BadRequest();
 
-            if (!Guid.TryParse(itemId, out _))
+            if (!ModelState.IsValid || parsedCartId != itemDto.CartId || parsedItemId != itemDto.Id)
                 return BadRequest();
 
-            if (!ModelState.IsValid 
-                || Guid.Parse(cartId) != itemDto.CartId 
-                || Guid.Parse(itemId) != itemDto.Id)
-                return BadRequest();
-
-            var updatedItem = await _cartService
-                .UpdateItemInCartAsync(Guid.Parse(cartId), Guid.Parse(itemId), itemDto);
+            var updatedItem = await _mediator.Send(new UpdateItemInCartCommand(parsedCartId, parsedItemId, itemDto));
 
             if (updatedItem == null)
                 return NotFound();

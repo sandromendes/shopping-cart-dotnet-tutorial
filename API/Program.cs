@@ -1,10 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Data;
-using Business.Services;
 using Infrastructure.Repositories;
-using Domain.Business.Interfaces;
 using Domain.Infrastructure.Interfaces;
 using Domain.Mapping;
+using Business;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,11 +21,11 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 29))));
 
-// Registrar o AutoMapper (com os perfis de mapeamento)
+// Register AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-// register services
-builder.Services.AddScoped<ICartService, CartService>();
+// Register MediatR
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(BusinessAssemblyMarker).Assembly));
 
 // Register repository
 builder.Services.AddScoped<ICartRepository, CartRepository>();
