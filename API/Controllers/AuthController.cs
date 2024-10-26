@@ -1,6 +1,7 @@
 ﻿using Business.Commands;
 using Domain.Transfer;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -17,12 +18,13 @@ namespace API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(UserDTO userDto)
+        public async Task<IActionResult> Login(LoginDTO loginDto)
         {
             try
             {
-                var token = await _mediator.Send(new LoginCommand(userDto.Username, userDto.Password));
-                return Ok(new { Token = token });
+                var token = await _mediator.Send(new LoginCommand(loginDto.Username, loginDto.Password));
+
+                return Ok(new TokenDTO { Token = token });
             }
             catch (Exception ex)
             {
