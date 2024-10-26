@@ -27,6 +27,7 @@ namespace Business.Queries
         public async Task<UserDTO> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetByIdAsync(request.Id);
+            
             if (user == null)
             {
                 throw new NotFoundException("User not found.");

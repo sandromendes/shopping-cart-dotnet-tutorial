@@ -1,5 +1,6 @@
 ﻿using Business.Commands;
 using Business.Queries;
+using Domain.Exceptions;
 using Domain.Transfer;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -25,12 +26,17 @@ namespace API.Controllers
             if (!Guid.TryParse(userId, out var parsedUserId))
                 return BadRequest("Invalid user ID format.");
 
-            var user = await _mediator.Send(new GetUserByIdQuery(parsedUserId));
+            try
+            {
+                var user = await _mediator.Send(new GetUserByIdQuery(parsedUserId));
 
-            if (user == null)
+                return Ok(user);
+            }
+            catch (NotFoundException)
+            {
                 return NotFound("User not found.");
+            }
 
-            return Ok(user);
         }
 
         [HttpPost]

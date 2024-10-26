@@ -1,22 +1,37 @@
 ﻿using Domain.Transfer;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration.UserSecrets;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Tests.Common;
 
 namespace Tests.Integration.Controllers
 {
     public class CartControllerIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
+        private readonly AuthHelper _authHelper;
 
         public CartControllerIntegrationTests(WebApplicationFactory<Program> factory)
         {
             _client = factory.CreateClient();
+
+            _authHelper = new AuthHelper(_client);
+        }
+
+        private async Task AuthenticateAdminAsync()
+        {
+            var token = await _authHelper.GetTokenAsync("admin", "AdminPassword123");
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
         [Fact]
         public async Task GetCart_ShouldReturnOkWithCart()
         {
             // Arrange
+            await AuthenticateAdminAsync();
+
             var cartId = Guid.NewGuid();
             var itemId = Guid.NewGuid();
 
@@ -52,6 +67,9 @@ namespace Tests.Integration.Controllers
         [Fact]
         public async Task GetCart_ShouldReturnNotFoundIfCartDoesNotExist()
         {
+            // Arrange
+            await AuthenticateAdminAsync();
+
             // Act
             var response = await _client.GetAsync($"/api/cart/{Guid.NewGuid()}");
 
@@ -63,6 +81,8 @@ namespace Tests.Integration.Controllers
         public async Task AddCart_ShouldReturnCreatedAtAction()
         {
             // Arrange
+            await AuthenticateAdminAsync();
+
             var cartId = Guid.NewGuid();
             var cartItemId = Guid.NewGuid();
 
@@ -94,6 +114,8 @@ namespace Tests.Integration.Controllers
         public async Task AddCart_ShouldReturnBadRequestIfModelInvalid()
         {
             // Arrange
+            await AuthenticateAdminAsync();
+
             var cart = new CartDTO(); // Invalid cart
 
             // Act
@@ -107,6 +129,8 @@ namespace Tests.Integration.Controllers
         public async Task DeleteCart_ShouldReturnNoContent()
         {
             // Arrange
+            await AuthenticateAdminAsync();
+
             var cartId = Guid.NewGuid();
 
             var cart = new CartDTO 
@@ -135,6 +159,9 @@ namespace Tests.Integration.Controllers
         [Fact]
         public async Task DeleteCart_ShouldReturnNotFoundIfCartDoesNotExist()
         {
+            // Arrange
+            await AuthenticateAdminAsync();
+
             // Act
             var response = await _client.DeleteAsync($"/api/cart/{Guid.NewGuid()}");
 
@@ -146,6 +173,8 @@ namespace Tests.Integration.Controllers
         public async Task AddItemToCart_ShouldReturnCreatedAtAction()
         {
             // Arrange
+            await AuthenticateAdminAsync();
+
             var id = Guid.NewGuid();
 
             var cart = new CartDTO { Id = id, Items = new[] { new CartItemDTO { ProductName = "Existing Product", Quantity = 1 } } };
@@ -166,6 +195,8 @@ namespace Tests.Integration.Controllers
         public async Task RemoveItemFromCart_ShouldReturnNoContent()
         {
             // Arrange
+            await AuthenticateAdminAsync();
+
             var cartId = Guid.NewGuid();
             var itemId = Guid.NewGuid();
 
@@ -200,6 +231,8 @@ namespace Tests.Integration.Controllers
         public async Task UpdateItemInCart_ShouldReturnOk()
         {
             // Arrange
+            await AuthenticateAdminAsync();
+
             var cartId = Guid.NewGuid();
             var cartItemId = Guid.NewGuid();
 
@@ -242,6 +275,8 @@ namespace Tests.Integration.Controllers
         public async Task UpdateItemInCart_ShouldReturnBadRequestIfModelInvalid()
         {
             // Arrange
+            await AuthenticateAdminAsync();
+
             var invalidItem = new CartItemDTO(); // Invalid item
 
             // Act
@@ -255,6 +290,8 @@ namespace Tests.Integration.Controllers
         public async Task UpdateItemInCart_ShouldReturnNotFoundIfCartOrItemDoesNotExist()
         {
             // Arrange
+            await AuthenticateAdminAsync();
+
             var cartId = Guid.NewGuid();
 
             var item = new CartItemDTO 
