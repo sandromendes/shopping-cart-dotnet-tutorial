@@ -1,4 +1,5 @@
-﻿using Domain.Transfer;
+﻿using Business.Pagination;
+using Domain.Transfer;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration.UserSecrets;
 using System.Net.Http.Headers;
@@ -308,6 +309,53 @@ namespace Tests.Integration.Controllers
 
             // Assert
             Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetItemsFromCartAsync_ShouldReturnPagedResult_WhenCalledWithValidParameters()
+        {
+            // Arrange
+            await AuthenticateAdminAsync();
+
+            var cartId = Guid.NewGuid();
+            var cartItemId = Guid.NewGuid();
+
+            var cart = new CartDTO
+            {
+                Id = cartId,
+                Items = new[]
+                {
+                    new CartItemDTO
+                    {
+                        Id = cartItemId,
+                        CartId = cartId,
+                        ProductName = "Old Item",
+                        Quantity = 1,
+                        Price = 1
+                    }
+                }
+            };
+
+            await _client.PostAsJsonAsync("/api/cart", cart);
+
+            var pageInfo = new PageInfo { Page = 1, PageSize = 5 };
+            var ordering = new Ordering { SortField = "Price", IsAscending = true };
+            var filter = new Filter { MinPrice = 10, MaxPrice = 50 };
+
+            var url = $"/api/cart/{cartId}/items?page={pageInfo.Page}&pageSize={pageInfo.PageSize}&sortField={ordering.SortField}&isAscending={ordering.IsAscending}&minPrice={filter.MinPrice}&maxPrice={filter.MaxPrice}";
+
+            // Act
+            var response = await _client.GetAsync(url);
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+            var pagedResult = await response.Content.ReadFromJsonAsync<PagedResult<CartItemDTO>>();
+
+            Assert.NotNull(pagedResult);
+            Assert.Equal(pageInfo.Page, pagedResult.PageNumber);
+            Assert.Equal(pageInfo.PageSize, pagedResult.PageSize);
+            Assert.InRange(pagedResult.TotalItems, 1, int.MaxValue);
+            Assert.True(pagedResult.Items.All(i => i.Price >= filter.MinPrice && i.Price <= filter.MaxPrice));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Business.Commands;
+using Business.Pagination;
 using Business.Queries;
 using Domain.Transfer;
 using MediatR;
@@ -59,12 +60,15 @@ namespace API.Controllers
         }
 
         [HttpGet("{cartId}/items")]
-        public async Task<IActionResult> GetItemsFromCartAsync(string cartId)
+        public async Task<IActionResult> GetItemsFromCartAsync(string cartId,
+            [FromQuery] PageInfo pagination,
+            [FromQuery] Ordering ordering,
+            [FromQuery] Filter filter)
         {
             if (!Guid.TryParse(cartId, out var parsedCartId))
                 return BadRequest();
 
-            var items = await _mediator.Send(new GetItemsFromCartQuery(parsedCartId));
+            var items = await _mediator.Send(new GetItemsFromCartQuery(parsedCartId, pagination, ordering, filter));
 
             if (items == null)
                 return NotFound();
