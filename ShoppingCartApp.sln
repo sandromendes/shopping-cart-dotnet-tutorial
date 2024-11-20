@@ -3,23 +3,26 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{3271DF0C-744F-487B-B0DD-1FBEF191F38A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "API\API.csproj", "{3271DF0C-744F-487B-B0DD-1FBEF191F38A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "Business\Business.csproj", "{2006F16C-EB4B-481B-87F5-24389C953843}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Business", "Business\Business.csproj", "{2006F16C-EB4B-481B-87F5-24389C953843}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{95276191-ADC3-4AD4-9C4E-73F65C7563D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{95276191-ADC3-4AD4-9C4E-73F65C7563D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{09409D4C-F966-4F6B-83D4-B4790D4F9E3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{09409D4C-F966-4F6B-83D4-B4790D4F9E3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{F05E4AB8-5C1F-4632-9C41-CD0BD0E41F97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{F05E4AB8-5C1F-4632-9C41-CD0BD0E41F97}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Itens de Solução", "Itens de Solução", "{F5E4D5F6-314A-4A11-B55D-BDC89ABC97C9}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		Dockerfile = Dockerfile
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{3271DF0C-744F-487B-B0DD-1FBEF191F38A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -42,5 +45,11 @@ Global
 		{F05E4AB8-5C1F-4632-9C41-CD0BD0E41F97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F05E4AB8-5C1F-4632-9C41-CD0BD0E41F97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F05E4AB8-5C1F-4632-9C41-CD0BD0E41F97}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {68D6C36A-5122-40BB-A490-60E80897246E}
 	EndGlobalSection
 EndGlobal
