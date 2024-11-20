@@ -24,8 +24,16 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // config DbContext for MySQL
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 29))));
+builder.Services
+    .AddDbContext<AppDbContext>(options =>
+        options.UseMySql(
+        connectionString,
+        new MySqlServerVersion(new Version(8, 0, 29)),
+        options => options.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null))
+    );
 
 // Register AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -89,6 +97,14 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
+// execution of migrations
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await dbContext.Database.MigrateAsync();
+}
+
+// pipeline config
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

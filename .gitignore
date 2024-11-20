@@ -43,3 +43,4 @@ artifacts/
 
 # Visual Studio (Windows)
 .vs/
+/ShoppingCartApp.sln
